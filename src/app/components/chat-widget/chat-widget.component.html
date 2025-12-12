@@ -1,0 +1,29 @@
+<div class="chat-widget-container">
+  <button class="chat-toggle-btn" (click)="toggleChat()">
+    <i class="fa fa-comments" aria-hidden="true"></i>
+  </button>
+
+  <div class="chat-box" *ngIf="isOpen">
+    <div class="chat-header">
+      <h5>Hỗ trợ trực tuyến</h5>
+      <span class="close-btn" (click)="toggleChat()">&times;</span>
+    </div>
+
+    <div class="chat-body">
+      <div *ngFor="let msg of messages" [class.msg-user]="msg.isUser" [class.msg-bot]="!msg.isUser">
+        <div class="msg-content">{{ msg.text }}</div>
+      </div>
+
+      <div *ngIf="isLoading" class="msg-bot">
+        <div class="msg-content">Running...</div>
+      </div>
+    </div>
+
+    <div class="chat-footer">
+      <input type="text" [(ngModel)]="userMessage" (keyup.enter)="sendMessage()" placeholder="Nhập câu hỏi..." />
+      <button (click)="sendMessage()">
+        <i class="fa fa-paper-plane" aria-hidden="true"></i>
+      </button>
+    </div>
+  </div>
+</div>

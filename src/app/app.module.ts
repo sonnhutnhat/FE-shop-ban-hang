@@ -32,6 +32,8 @@ import { AuthGuard } from './guard/auth.guard';
 import { OrderModule } from 'ngx-order-pipe';
 import { NgxPayPalModule } from 'ngx-paypal';
 
+import { ChatWidgetComponent } from './components/chat-widget/chat-widget.component';
+
 
 const routes: Routes = [
   { path: 'home', component: HomepageComponent },
@@ -71,7 +73,8 @@ const routes: Routes = [
     ForgotPasswordComponent,
     FavoriteComponent,
     ContactComponent,
-    AboutComponent
+    AboutComponent,
+    ChatWidgetComponent
   ],
   imports: [
     BrowserModule,
@@ -85,8 +88,8 @@ const routes: Routes = [
     NgxPayPalModule,
     RouterModule.forRoot(routes, { enableTracing: true }),
     NgbModule,
-     // NgModule,
-     ToastrModule.forRoot({
+    // NgModule,
+    ToastrModule.forRoot({
       timeOut: 2500,
       // progressBar: true,
       progressAnimation: 'increasing',
