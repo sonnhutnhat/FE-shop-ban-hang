@@ -1,0 +1,105 @@
+/* Nút mở chat */
+.chat-toggle-btn {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: #fcb800; /* Màu vàng chủ đạo của Martfury */
+  color: white;
+  border: none;
+  font-size: 24px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  cursor: pointer;
+  z-index: 9999;
+  transition: transform 0.3s;
+}
+.chat-toggle-btn:hover { transform: scale(1.1); }
+
+/* Khung chat */
+.chat-box {
+  position: fixed;
+  bottom: 100px;
+  right: 30px;
+  width: 350px;
+  height: 450px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+  display: flex;
+  flex-direction: column;
+  z-index: 9999;
+  overflow: hidden;
+  font-family: Arial, sans-serif;
+}
+
+/* Header */
+.chat-header {
+  background: #fcb800;
+  color: #222;
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: bold;
+}
+.close-btn { cursor: pointer; font-size: 20px; }
+
+/* Body (Nơi hiện tin nhắn) */
+.chat-body {
+  flex: 1;
+  padding: 15px;
+  overflow-y: auto;
+  background-color: #f4f4f4;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Tin nhắn */
+.msg-user { align-self: flex-end; }
+.msg-bot { align-self: flex-start; }
+
+.msg-content {
+  padding: 10px 15px;
+  border-radius: 20px;
+  max-width: 80%;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.msg-user .msg-content {
+  background-color: #007bff;
+  color: white;
+  border-bottom-right-radius: 2px;
+}
+
+.msg-bot .msg-content {
+  background-color: #e0e0e0;
+  color: #333;
+  border-bottom-left-radius: 2px;
+}
+
+/* Footer (Ô nhập liệu) */
+.chat-footer {
+  padding: 10px;
+  border-top: 1px solid #ddd;
+  display: flex;
+  background: white;
+}
+.chat-footer input {
+  flex: 1;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  padding: 8px 15px;
+  outline: none;
+}
+.chat-footer button {
+  background: none;
+  border: none;
+  color: #fcb800;
+  font-size: 20px;
+  margin-left: 10px;
+  cursor: pointer;
+}
