@@ -44,11 +44,11 @@ export class CheckoutComponent implements OnInit {
   district!: District;
   ward!: Ward;
 
-  amountPaypal !:number;
+  amountPaypal !: number;
   provinceCode!: number;
   districtCode!: number;
   wardCode!: number;
-  public payPalConfig ? : IPayPalConfig;
+  public payPalConfig?: IPayPalConfig;
 
   constructor(
     private cartService: CartService,
@@ -103,7 +103,7 @@ export class CheckoutComponent implements OnInit {
         })
         this.discount = this.amount - this.amountReal;
 
-        this.amountPaypal = (this.amount/22727.5);
+        this.amountPaypal = (this.amount / 22727.5);
       });
     });
   }
@@ -119,31 +119,35 @@ export class CheckoutComponent implements OnInit {
         cancelButtonText: 'Không',
         confirmButtonText: 'Đặt'
       }).then((result) => {
-        let email = this.sessionService.getUser();
-        this.cartService.getCart(email).subscribe(data => {
-          this.cart = data as Cart;
-          this.cart.address = this.postForm.value.number;
-          this.cart.phone = this.postForm.value.phone;
-          this.cartService.updateCart(email, this.cart).subscribe(data => {
+        // KIỂM TRA XEM NGƯỜI DÙNG CÓ BẤM "ĐẶT" KHÔNG
+        if (result.isConfirmed) {
+          let email = this.sessionService.getUser();
+          this.cartService.getCart(email).subscribe(data => {
             this.cart = data as Cart;
-            this.orderService.post(email, this.cart).subscribe(data => {
-              let order:Order = data as Order;
-              this.sendMessage(order.ordersId);
-              Swal.fire(
-                'Thành công!',
-                'Chúc mừng bạn đã đặt hàng thành công.',
-                'success'
-              )
-              this.router.navigate(['/cart']);
+            this.cart.address = this.postForm.value.number;
+            this.cart.phone = this.postForm.value.phone;
+            this.cartService.updateCart(email, this.cart).subscribe(data => {
+              this.cart = data as Cart;
+              this.orderService.post(email, this.cart).subscribe(data => {
+                let order: Order = data as Order;
+                this.sendMessage(order.ordersId);
+                Swal.fire(
+                  'Thành công!',
+                  'Chúc mừng bạn đã đặt hàng thành công.',
+                  'success'
+                )
+                this.router.navigate(['/cart']);
+              }, error => {
+                this.toastr.error('Lỗi server', 'Hệ thống');
+              })
             }, error => {
               this.toastr.error('Lỗi server', 'Hệ thống');
             })
           }, error => {
             this.toastr.error('Lỗi server', 'Hệ thống');
           })
-        }, error => {
-          this.toastr.error('Lỗi server', 'Hệ thống');
-        })
+        }
+        // Nếu người dùng bấm "Không", không làm gì cả
       })
 
     } else {
@@ -151,9 +155,9 @@ export class CheckoutComponent implements OnInit {
     }
   }
 
-  sendMessage(id:number) {
+  sendMessage(id: number) {
     let chatMessage = new ChatMessage(this.cart.user.name, ' đã đặt một đơn hàng');
-    this.notificationService.post(new Notification(0, this.cart.user.name + ' đã đặt một đơn hàng ('+id+')')).subscribe(data => {
+    this.notificationService.post(new Notification(0, this.cart.user.name + ' đã đặt một đơn hàng (' + id + ')')).subscribe(data => {
       this.webSocketService.sendMessage(chatMessage);
     })
   }
@@ -202,52 +206,52 @@ export class CheckoutComponent implements OnInit {
   private checkOutPaypal(): void {
 
     this.payPalConfig = {
-        currency: 'USD',
-        clientId: 'Af5ZEdGAlk3_OOp29nWn8_g717UNbdcbpiPIZOZgSH4Gdneqm_y_KVFiHgrIsKM0a2dhNBfFK8TIuoOG',
-        createOrderOnClient: (data) => < ICreateOrderRequest > {
-            intent: 'CAPTURE',
-            purchase_units: [{
-                amount: {
-                    currency_code: 'USD',
-                    value:String(this.amountPaypal.toFixed(2)),
+      currency: 'USD',
+      clientId: 'Af5ZEdGAlk3_OOp29nWn8_g717UNbdcbpiPIZOZgSH4Gdneqm_y_KVFiHgrIsKM0a2dhNBfFK8TIuoOG',
+      createOrderOnClient: (data) => <ICreateOrderRequest>{
+        intent: 'CAPTURE',
+        purchase_units: [{
+          amount: {
+            currency_code: 'USD',
+            value: String(this.amountPaypal.toFixed(2)),
 
-                },
+          },
 
-            }]
-        },
-        advanced: {
-            commit: 'true'
-        },
-        style: {
-            label: 'paypal',
-            layout: 'vertical',
-            color: 'blue',
-            size: 'small',
-            shape: 'rect',
-        },
-        onApprove: (data, actions) => {
-            console.log('onApprove - transaction was approved, but not authorized', data, actions);
-            actions.order.get().then((details: any) => {
-                console.log('onApprove - you can get full order details inside onApprove: ', details);
-            });
+        }]
+      },
+      advanced: {
+        commit: 'true'
+      },
+      style: {
+        label: 'paypal',
+        layout: 'vertical',
+        color: 'blue',
+        size: 'small',
+        shape: 'rect',
+      },
+      onApprove: (data, actions) => {
+        console.log('onApprove - transaction was approved, but not authorized', data, actions);
+        actions.order.get().then((details: any) => {
+          console.log('onApprove - you can get full order details inside onApprove: ', details);
+        });
 
-        },
-        onClientAuthorization: (data) => {
-            console.log('onClientAuthorization - you should probably inform your server about completed transaction at this point', data);
-            this.checkOut();
-        },
-        onCancel: (data, actions) => {
-            console.log('OnCancel', data, actions);
+      },
+      onClientAuthorization: (data) => {
+        console.log('onClientAuthorization - you should probably inform your server about completed transaction at this point', data);
+        this.checkOut();
+      },
+      onCancel: (data, actions) => {
+        console.log('OnCancel', data, actions);
 
-        },
-        onError: err => {
-            console.log('OnError', err);
-        },
-        onClick: (data, actions) => {
-            console.log('onClick', data, actions);
+      },
+      onError: err => {
+        console.log('OnError', err);
+      },
+      onClick: (data, actions) => {
+        console.log('onClick', data, actions);
 
-        },
+      },
     };
-}
+  }
 
 }
