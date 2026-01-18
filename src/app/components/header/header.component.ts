@@ -29,6 +29,9 @@ export class HeaderComponent implements OnInit {
   totalCartItem!: number;
   keyword: string = ' ';
 
+  isMobileMenuOpen = false;
+  isSubmenuOpen = false;
+
   constructor(
     private categoryService: CategoryService,
     private cartService: CartService,
@@ -48,7 +51,7 @@ export class HeaderComponent implements OnInit {
     this.getAllFavorites();
     this.getAllCartItem();
     this.getCategories();
-    
+
     this.checkLogin();
   }
 
@@ -106,6 +109,18 @@ export class HeaderComponent implements OnInit {
   logout() {
     this.sessionService.signOut();
     window.location.href = ('/');
+  }
+
+  toggleMobileMenu() {
+    this.isMobileMenuOpen = !this.isMobileMenuOpen;
+    if (!this.isMobileMenuOpen) {
+      this.isSubmenuOpen = false; // Reset submenu khi đóng menu
+    }
+  }
+
+  toggleSubmenu(event: Event) {
+    event.preventDefault();
+    this.isSubmenuOpen = !this.isSubmenuOpen;
   }
 
 }

@@ -89,3 +89,91 @@
         </div>
     </nav>
 </header>
+
+<header class="header header--mobile" data-sticky="true">
+    <div class="navigation--mobile">
+        <div class="navigation__left">
+            <a class="ps-toggle--sidebar" href="javascript:void(0);" (click)="toggleMobileMenu()">
+                <i class="icon-menu"></i>
+            </a>
+            <a class="ps-logo" [routerLink]="['/home']">
+                <img src="img/logo_new3.png" alt="Logo">
+            </a>
+        </div>
+        <div class="navigation__right">
+            <div class="header__actions">
+                <!-- Thêm wishlist vào mobile để đầy đủ -->
+                <a class="header__extra" [routerLink]="['/favorites']">
+                    <i class="icon-heart"></i>
+                    <span>
+                        <i>{{totalFavoriteItem || 0}}</i>
+                    </span>
+                </a>
+                <div class="ps-cart--mini">
+                    <a class="header__extra" [routerLink]="['/cart']">
+                        <i class="icon-bag2"></i>
+                        <span><i>{{ totalCartItem || 0 }}</i></span>
+                    </a>
+                </div>
+                <div class="ps-block--user-header">
+                    <div class="ps-block__left">
+                        <a *ngIf="!isLogin" [routerLink]="['/sign-form']"><i class="icon-user"></i></a>
+                        <a *ngIf="isLogin" [routerLink]="['/profile']"><i class="icon-user"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="ps-search--mobile">
+        <form class="ps-form--search-mobile" action="index.html" method="get">
+            <div class="form-group--nest">
+                <input class="form-control" type="text" placeholder="Tìm sản phẩm..." [(ngModel)]="keyword"
+                    name="keyword">
+                <button type="button" [routerLink]="['/search/'+keyword]"><i class="icon-magnifier"></i></button>
+            </div>
+        </form>
+    </div>
+</header>
+
+<!-- Sidebar menu mobile -->
+<div class="ps-panel--sidebar" id="navigation-mobile" [class.active]="isMobileMenuOpen">
+    <div class="ps-panel__header">
+        <h3>Menu</h3>
+        <a class="ps-btn--close" href="javascript:void(0);" (click)="toggleMobileMenu()"
+            style="font-size: 24px; color: #333;">
+            <i class="icon-cross"></i>
+        </a>
+    </div>
+    <div class="ps-panel__content">
+        <ul class="menu--mobile">
+            <li><a [routerLink]="['/home']" (click)="toggleMobileMenu()">Trang chủ</a></li>
+            <li><a [routerLink]="['/all-product']" (click)="toggleMobileMenu()">Cửa hàng</a></li>
+            <li class="menu-item-has-children">
+                <a href="javascript:void(0);" (click)="isSubmenuOpen = !isSubmenuOpen">
+                    Sản phẩm <i class="icon-chevron-down"></i>
+                </a>
+                <ul class="sub-menu" [style.display]="isSubmenuOpen ? 'block' : 'none'">
+                    <li *ngFor="let item of categories">
+                        <a [routerLink]="['/by-category/'+item.categoryId]" (click)="toggleMobileMenu()">
+                            {{ item.categoryName }}
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li><a [routerLink]="['/about']" (click)="toggleMobileMenu()">Giới thiệu</a></li>
+            <li><a [routerLink]="['/contact']" (click)="toggleMobileMenu()">Liên hệ</a></li>
+            <li *ngIf="!isLogin">
+                <a [routerLink]="['/sign-form']" (click)="toggleMobileMenu()">Đăng nhập & Đăng ký</a>
+            </li>
+            <li *ngIf="isLogin">
+                <a [routerLink]="['/profile']" (click)="toggleMobileMenu()">Thông tin người dùng</a>
+            </li>
+            <li *ngIf="isLogin">
+                <a href="javascript:void(0);" (click)="logout(); toggleMobileMenu()">Đăng xuất</a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<!-- Overlay để đóng menu khi click ngoài -->
+<div class="navigation__overlay" [class.active]="isMobileMenuOpen" (click)="toggleMobileMenu()"></div>
