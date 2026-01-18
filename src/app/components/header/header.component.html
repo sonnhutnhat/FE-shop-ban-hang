@@ -1,6 +1,3 @@
-<div>
-  <img src="img/slider/home-3/home-banner/3.jpg" alt="" height="60px" width="100%"/>
-</div>
 <header class="header header--1" data-sticky="true">
     <div class="header__top">
         <div class="ps-container">
@@ -19,7 +16,8 @@
             </div>
             <div class="header__center">
                 <form class="ps-form--quick-search" action="#" method="get">
-                    <input class="form-control" (keyup)="search($event)" type="text" placeholder="Tìm kiếm theo tên sản phẩm..." id="input-search" />
+                    <input class="form-control" (keyup)="search($event)" type="text"
+                        placeholder="Tìm kiếm theo tên sản phẩm..." id="input-search" />
                     <button [routerLink]="['/search/'+keyword]">Tìm</button>
                 </form>
             </div>
@@ -84,7 +82,8 @@
                     <li class="menu-item"><a [routerLink]="['/all-product']">Cửa hàng</a></li>
                     <li class="menu-item"><a [routerLink]="['/about']">Giới thiệu</a></li>
                     <li class="menu-item"><a [routerLink]="['/contact']">Liên hệ</a></li>
-                    <li class="menu-item" *ngIf="!isLogin"><a [routerLink]="['/sign-form']">Đăng nhập &amp; Đăng ký</a></li>
+                    <li class="menu-item" *ngIf="!isLogin"><a [routerLink]="['/sign-form']">Đăng nhập &amp; Đăng ký</a>
+                    </li>
                 </ul>
             </div>
         </div>
