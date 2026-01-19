@@ -1,15 +1,185 @@
 .star {
     position: relative;
     display: inline-block;
-    font-size: 5rem;
+    font-size: 14px;
     color: #d3d3d3;
-  }
-  .full {
-    color: #ffcc23;
-  }
-  .half {
+}
+.full {
+    color: #fcb800; 
+}
+.half {
     position: absolute;
     display: inline-block;
     overflow: hidden;
-    color: #ffcc23;
-  }
+    color: #fcb800;
+}
+
+/* 1. Xử lý ảnh Banner & Slider không bị méo */
+.ps-home-banner img, 
+.ps-product__thumbnail img,
+.ps-collection img {
+    max-width: 100%;
+    height: auto !important; /* Ghi đè height cứng trong HTML */
+    object-fit: cover;
+    display: block;
+    border-radius: 4px;
+}
+
+/* 2. Banner chính */
+.ps-home-banner {
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+/* Khoảng cách giữa các banner nhỏ bên phải */
+.ps-section__right .ps-collection:first-child {
+    margin-bottom: 20px;
+}
+
+/* 3. Khối tính năng (Giao hàng, Hỗ trợ...) */
+.ps-block--site-features {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 30px 20px;
+    border: 1px solid #e1e1e1;
+    background: #fff;
+    margin-top: 30px;
+    margin-bottom: 30px;
+    border-radius: 4px;
+}
+
+.ps-block--site-features .ps-block__item {
+    width: 25%; /* Mặc định PC: 4 cột */
+    padding: 0 15px;
+    border-right: 1px solid #e1e1e1;
+    text-align: center;
+    margin-bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.ps-block--site-features .ps-block__item:last-child {
+    border-right: none;
+}
+
+.ps-block--site-features .ps-block__left i {
+    font-size: 36px;
+    margin-bottom: 15px;
+    color: #fcb800;
+}
+
+.ps-block--site-features h4 {
+    font-size: 16px;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    color: #222;
+}
+
+.ps-block--site-features p {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 0;
+}
+
+/* 4. Newsletter (Đăng ký nhận tin) */
+.ps-newsletter {
+    background-color: #f4f4f4;
+    padding: 50px 0;
+    margin-top: 50px;
+}
+
+.ps-form--newsletter input {
+    height: 50px;
+    border-radius: 4px 0 0 4px;
+    border: 1px solid #ccc;
+    padding-left: 20px;
+}
+
+.ps-form--newsletter button {
+    background-color: #fcb800;
+    color: #222;
+    font-weight: bold;
+    border: none;
+    height: 50px;
+    padding: 0 30px;
+    border-radius: 0 4px 4px 0;
+    cursor: pointer;
+    transition: 0.3s;
+}
+.ps-form--newsletter button:hover {
+    background-color: #e0a300;
+}
+
+/* =========================================
+   MOBILE & TABLET ONLY (< 992px)
+   ========================================= */
+@media (max-width: 991px) {
+    
+    /* Layout Banner: Xếp chồng lên nhau trên mobile */
+    .ps-home-banner .ps-section__left,
+    .ps-home-banner .ps-section__right {
+        width: 100%;
+        padding: 0 15px;
+    }
+    
+    .ps-home-banner .ps-section__left {
+        margin-bottom: 20px;
+    }
+
+    /* Khối tính năng: Chia 2 cột trên mobile/tablet */
+    .ps-block--site-features .ps-block__item {
+        width: 50%; /* 2 cột */
+        border-right: none;
+        border-bottom: 1px solid #e1e1e1;
+        padding: 20px 10px;
+    }
+    
+    .ps-block--site-features .ps-block__item:nth-child(3),
+    .ps-block--site-features .ps-block__item:nth-child(4) {
+        border-bottom: none;
+    }
+
+    /* Tiêu đề Section căn giữa */
+    .ps-product-list .ps-section__header h3 {
+        text-align: center;
+        width: 100%;
+        margin-bottom: 15px;
+    }
+
+    /* Tabs (Sản phẩm bán chạy...) scroll ngang nếu quá dài */
+    .ps-section__header .ps-section__links {
+        justify-content: center;
+        width: 100%;
+    }
+    
+    .ps-section__header .ps-section__links li {
+        margin-right: 15px;
+    }
+}
+
+/* Mobile nhỏ (< 576px) */
+@media (max-width: 576px) {
+    .ps-block--site-features .ps-block__item {
+        width: 100%; /* 1 cột dọc */
+        border-bottom: 1px solid #e1e1e1;
+    }
+    .ps-block--site-features .ps-block__item:last-child {
+        border-bottom: none;
+    }
+    
+    .ps-form--newsletter .form-group--nest {
+        flex-direction: column;
+    }
+    .ps-form--newsletter input {
+        border-radius: 4px;
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    .ps-form--newsletter button {
+        border-radius: 4px;
+        width: 100%;
+    }
+}
