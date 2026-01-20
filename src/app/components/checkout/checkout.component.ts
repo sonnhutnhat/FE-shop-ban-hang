@@ -50,8 +50,8 @@ export class CheckoutComponent implements OnInit {
   wardCode!: number;
   public payPalConfig?: IPayPalConfig;
 
-  // Thêm cờ kiểm tra xem có phải mua ngay không
-  isBuyNow: boolean = false;
+  // Cờ kiểm tra chế độ Checkout (Mua ngay / Mua từ giỏ hàng đã chọn)
+  isCustomCheckout: boolean = false;
 
   constructor(
     private cartService: CartService,
@@ -82,24 +82,43 @@ export class CheckoutComponent implements OnInit {
     this.amountPaypal = 0;
     this.amountReal = 0;
 
-    // --- LOGIC MỚI: KIỂM TRA MUA NGAY ---
+    // --- LOGIC XỬ LÝ DỮ LIỆU ĐƯỢC TRUYỀN SANG ---
     const state = history.state;
+
     if (state && state.buyNowItem) {
-      this.isBuyNow = true;
-      this.getBuyNowItem(state.buyNowItem);
-    } else {
-      this.isBuyNow = false;
+      // Trường hợp 1: Mua Ngay (1 món từ trang chi tiết)
+      this.isCustomCheckout = true;
+      this.setupCustomCheckout([this.createMockDetail(state.buyNowItem)]);
+    }
+    else if (state && state.checkoutItems) {
+      // Trường hợp 2: Mua từ Giỏ hàng (Các món đã chọn checkbox)
+      this.isCustomCheckout = true;
+      this.setupCustomCheckout(state.checkoutItems);
+    }
+    else {
+      // Trường hợp 3: Fallback (ít khi xảy ra nếu làm đúng quy trình)
+      this.isCustomCheckout = false;
       this.getAllItem();
     }
-    // ------------------------------------
+    // ----------------------------------------------
 
     this.getProvinces();
   }
 
-  // Hàm xử lý dữ liệu Mua Ngay (Clone từ getAllItem nhưng sửa logic tính toán)
-  getBuyNowItem(item: any) {
+  // Hàm tạo object chi tiết giả lập cho Mua Ngay
+  createMockDetail(item: any): any {
+    return {
+      cartDetailId: 0,
+      quantity: item.quantity,
+      price: item.price,
+      product: item.product
+    };
+  }
+
+  // Hàm xử lý hiển thị cho các trường hợp Mua Ngay / Mua Selected
+  setupCustomCheckout(items: any[]) {
     let email = this.sessionService.getUser();
-    // Vẫn gọi getCart để lấy thông tin User (Phone, Address, Name)
+    // Vẫn gọi getCart chỉ để lấy thông tin User (Tên, SĐT, Địa chỉ) để điền vào form
     this.cartService.getCart(email).subscribe(data => {
       this.cart = data as Cart;
 
@@ -108,27 +127,23 @@ export class CheckoutComponent implements OnInit {
         'number': new FormControl('', Validators.required),
       })
 
-      // Ghi đè cartDetails bằng sản phẩm Mua Ngay
-      // Tạo object giả lập CartDetail
-      // Lưu ý: Cần ép kiểu hoặc tạo object sao cho khớp với model CartDetail của bạn
-      const mockDetail: any = {
-        cartDetailId: 0,
-        quantity: item.quantity,
-        price: item.price,
-        product: item.product,
-        cart: this.cart
-      };
-
-      this.cartDetails = [mockDetail];
+      // Gán danh sách sản phẩm từ state vào biến hiển thị
+      this.cartDetails = items;
 
       // Tính toán tiền
-      this.amountReal = item.price * item.quantity;
-      this.amount = this.amountReal; // Hoặc cộng thêm ship nếu có
-      this.discount = 0; // Mua ngay thường tính giá đã giảm rồi nên discount hiển thị có thể để 0 hoặc tính lại tùy logic
+      this.cartDetails.forEach(item => {
+        this.amountReal += item.product.price * item.quantity;
+        this.amount += (item.price ? item.price : (item.product.price * item.quantity)); // Fallback tính giá nếu thiếu
+      });
+
+      this.discount = this.amount - this.amountReal; // Có thể âm hoặc 0 tùy logic giá
+      if (this.discount < 0) this.discount = 0;
+
       this.amountPaypal = (this.amount / 22727.5);
     });
   }
 
+  // Logic cũ (Giữ lại để tham khảo hoặc fallback)
   getAllItem() {
     let email = this.sessionService.getUser();
     this.cartService.getCart(email).subscribe(data => {
@@ -149,7 +164,6 @@ export class CheckoutComponent implements OnInit {
           this.amount += item.price;
         })
         this.discount = this.amount - this.amountReal;
-
         this.amountPaypal = (this.amount / 22727.5);
       });
     });
@@ -169,48 +183,37 @@ export class CheckoutComponent implements OnInit {
         if (result.isConfirmed) {
           let email = this.sessionService.getUser();
 
-          // NẾU LÀ MUA NGAY: KHÔNG UPDATE GIỎ HÀNG VÀO DB
-          if (this.isBuyNow) {
-            // Cập nhật thông tin vào object cart hiện tại để gửi đi
-            this.cart.address = this.postForm.value.number;
-            this.cart.phone = this.postForm.value.phone;
+          // Cập nhật thông tin nhận hàng vào object Cart hiện tại
+          // Lưu ý: Đây là object Cart trên RAM, không nhất thiết phải trùng DB nếu là Custom Checkout
+          this.cart.address = this.postForm.value.number;
+          this.cart.phone = this.postForm.value.phone;
 
-            // Bạn có thể cần gán cartDetails vào cart nếu Server yêu cầu body có list item
-            // this.cart.cartDetails = this.cartDetails; // (Nếu model Cart có thuộc tính này)
+          if (this.isCustomCheckout) {
 
-            this.orderService.post(email, this.cart).subscribe(data => {
-              let order: Order = data as Order;
-              this.sendMessage(order.ordersId);
-              Swal.fire(
-                'Thành công!',
-                'Chúc mừng bạn đã đặt hàng thành công.',
-                'success'
-              )
-              this.router.navigate(['/home']); // Mua ngay xong về Home, không về Cart
+            this.cartService.updateCart(email, this.cart).subscribe(data => {
+              this.cart = data as Cart;
+              this.orderService.post(email, this.cart).subscribe(data => {
+                let order: Order = data as Order;
+                this.sendMessage(order.ordersId);
+
+                Swal.fire('Thành công!', 'Đơn hàng đã được đặt.', 'success');
+                this.router.navigate(['/home']);
+              }, error => {
+                this.toastr.error('Lỗi server', 'Hệ thống');
+              })
             }, error => {
               this.toastr.error('Lỗi server', 'Hệ thống');
             })
 
           } else {
-            // LOGIC CŨ CHO GIỎ HÀNG
-            this.cartService.getCart(email).subscribe(data => {
+            // LOGIC CŨ (Mua tất cả trong giỏ)
+            this.cartService.updateCart(email, this.cart).subscribe(data => {
               this.cart = data as Cart;
-              this.cart.address = this.postForm.value.number;
-              this.cart.phone = this.postForm.value.phone;
-              this.cartService.updateCart(email, this.cart).subscribe(data => {
-                this.cart = data as Cart;
-                this.orderService.post(email, this.cart).subscribe(data => {
-                  let order: Order = data as Order;
-                  this.sendMessage(order.ordersId);
-                  Swal.fire(
-                    'Thành công!',
-                    'Chúc mừng bạn đã đặt hàng thành công.',
-                    'success'
-                  )
-                  this.router.navigate(['/cart']);
-                }, error => {
-                  this.toastr.error('Lỗi server', 'Hệ thống');
-                })
+              this.orderService.post(email, this.cart).subscribe(data => {
+                let order: Order = data as Order;
+                this.sendMessage(order.ordersId);
+                Swal.fire('Thành công!', 'Đơn hàng đã được đặt.', 'success');
+                this.router.navigate(['/cart']);
               }, error => {
                 this.toastr.error('Lỗi server', 'Hệ thống');
               })
@@ -220,7 +223,6 @@ export class CheckoutComponent implements OnInit {
           }
         }
       })
-
     } else {
       this.toastr.error('Hãy nhập đầy đủ thông tin', 'Hệ thống');
     }
@@ -275,7 +277,6 @@ export class CheckoutComponent implements OnInit {
   }
 
   private checkOutPaypal(): void {
-
     this.payPalConfig = {
       currency: 'USD',
       clientId: 'Af5ZEdGAlk3_OOp29nWn8_g717UNbdcbpiPIZOZgSH4Gdneqm_y_KVFiHgrIsKM0a2dhNBfFK8TIuoOG',
@@ -285,9 +286,7 @@ export class CheckoutComponent implements OnInit {
           amount: {
             currency_code: 'USD',
             value: String(this.amountPaypal.toFixed(2)),
-
           },
-
         }]
       },
       advanced: {
@@ -305,24 +304,20 @@ export class CheckoutComponent implements OnInit {
         actions.order.get().then((details: any) => {
           console.log('onApprove - you can get full order details inside onApprove: ', details);
         });
-
       },
       onClientAuthorization: (data) => {
-        console.log('onClientAuthorization - you should probably inform your server about completed transaction at this point', data);
+        console.log('onClientAuthorization', data);
         this.checkOut();
       },
       onCancel: (data, actions) => {
         console.log('OnCancel', data, actions);
-
       },
       onError: err => {
         console.log('OnError', err);
       },
       onClick: (data, actions) => {
         console.log('onClick', data, actions);
-
       },
     };
   }
-
 }

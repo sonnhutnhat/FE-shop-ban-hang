@@ -13,7 +13,7 @@ export class ChatWidgetComponent implements OnInit {
 
   // Danh sách tin nhắn (Mẫu 1 tin chào hỏi ban đầu)
   messages: { text: string, isUser: boolean }[] = [
-    { text: 'Xin chào! Tôi là trợ lý ảo Martfury. Tôi có thể giúp gì cho bạn?', isUser: false }
+    { text: 'Xin chào! Tôi là trợ lý ảo Shopee. Tôi có thể giúp gì cho bạn?', isUser: false }
   ];
 
   constructor(private chatService: ChatAiService) { }

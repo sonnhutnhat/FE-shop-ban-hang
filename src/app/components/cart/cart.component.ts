@@ -16,19 +16,22 @@ export class CartComponent implements OnInit {
 
   cart!: Cart;
   cartDetail!: CartDetail;
-  cartDetails!: CartDetail[];
+  // Dùng any[] để có thể thêm thuộc tính 'selected' mà không cần sửa Model
+  cartDetails: any[] = [];
 
-  discount!:number;
-  amount!:number;
-  amountReal!:number;
+  discount: number = 0;
+  amount: number = 0;
+  amountReal: number = 0;
+
+  // Biến kiểm tra chọn tất cả
+  checkAllState: boolean = false;
 
   constructor(
     private cartService: CartService,
     private toastr: ToastrService,
     private router: Router,
     private sessionService: SessionService) {
-
-   }
+  }
 
   ngOnInit(): void {
     this.router.events.subscribe((evt) => {
@@ -37,9 +40,6 @@ export class CartComponent implements OnInit {
       }
       window.scrollTo(0, 0)
     });
-    this.discount=0;
-    this.amount=0;
-    this.amountReal=0;
     this.getAllItem();
   }
 
@@ -48,15 +48,15 @@ export class CartComponent implements OnInit {
     this.cartService.getCart(email).subscribe(data => {
       this.cart = data as Cart;
       this.cartService.getAllDetail(this.cart.cartId).subscribe(data => {
-        this.cartDetails = data as CartDetail[];
+        this.cartDetails = data as any[];
+
+        // Mặc định chưa chọn sản phẩm nào
+        this.cartDetails.forEach(item => item.selected = false);
+
         this.cartService.setLength(this.cartDetails.length);
-        this.cartDetails.forEach(item=>{
-          this.amountReal += item.product.price * item.quantity;
-          this.amount += item.price;
-        })
-        this.discount = this.amount - this.amountReal;
-      })
-    })
+        this.calculateTotal(); // Tính toán lại tiền (lúc này là 0)
+      });
+    });
   }
 
   update(id: number, quantity: number) {
@@ -97,6 +97,55 @@ export class CartComponent implements OnInit {
         })
       }
     })
+  }
+
+  // --- LOGIC CHECKBOX & TÍNH TIỀN ---
+
+  checkAll(event: any) {
+    this.checkAllState = event.target.checked;
+    this.cartDetails.forEach(item => {
+      item.selected = this.checkAllState;
+    });
+    this.calculateTotal();
+  }
+
+  checkOne() {
+    // Kiểm tra xem tất cả có được chọn không để update nút checkAll
+    this.checkAllState = this.cartDetails.every(item => item.selected);
+    this.calculateTotal();
+  }
+
+  calculateTotal() {
+    this.amount = 0;
+    this.amountReal = 0;
+    this.discount = 0;
+
+    // Chỉ tính tiền những món có selected = true
+    this.cartDetails.forEach(item => {
+      if (item.selected) {
+        this.amountReal += item.product.price * item.quantity;
+        this.amount += item.price;
+      }
+    });
+    this.discount = this.amount - this.amountReal;
+  }
+
+  // --- CHUYỂN SANG CHECKOUT VỚI DANH SÁCH ĐÃ CHỌN ---
+  checkOutSelected() {
+    // Lọc ra các sản phẩm đã chọn
+    const selectedItems = this.cartDetails.filter(item => item.selected);
+
+    if (selectedItems.length === 0) {
+      this.toastr.warning('Vui lòng chọn ít nhất 1 sản phẩm để thanh toán!', 'Hệ thống');
+      return;
+    }
+
+    // Chuyển sang Checkout và gửi kèm danh sách hàng
+    this.router.navigate(['/checkout'], {
+      state: {
+        checkoutItems: selectedItems
+      }
+    });
   }
 
 }
