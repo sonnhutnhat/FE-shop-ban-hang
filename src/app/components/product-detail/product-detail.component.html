@@ -53,6 +53,9 @@
                                 <a class="ps-btn ps-btn--black" href="javascript:void(0);"
                                     (click)="addCart(product.productId, product.price*(1 - product.discount/100))">Thêm
                                     Giỏ Hàng</a>
+                                <a class="ps-btn ps-btn--buy-now" href="javascript:void(0);" (click)="buyNow()">
+                                    Mua ngay
+                                </a>
                                 <div class="ps-product__actions">
                                     <a href="javascript:void(0);" (click)="toggleLike(product.productId)"><i
                                             style="color: #ffcc23;" class="icon-heart"></i></a> {{totalLike}} lượt thích
@@ -151,7 +154,7 @@
                     <p><i class="icon-credit-card"></i> Thanh toán trực tuyến hoặc khi nhận hàng</p>
                 </aside>
                 <aside class="widget widget_sell-on-site">
-                    <p><i class="icon-store"></i> Bán trên Mart Electronics Store?<a href="#"> Đăng ký ngay !</a></p>
+                    <p><i class="icon-store"></i> Bán trên Shoppe?<a href="#"> Đăng ký ngay !</a></p>
                 </aside>
                 <aside class="widget widget_ads"><a href="#"><img src="img/ads/product-ads.png" alt=""></a></aside>
             </div>

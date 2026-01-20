@@ -37,20 +37,23 @@ export class ProductDetailComponent implements OnInit {
   cartDetail!: CartDetail;
   cartDetails!: CartDetail[];
 
-  rates!:Rate[];
-  rateAll!:Rate[];
-  countRate!:number;
+  rates!: Rate[];
+  rateAll!: Rate[];
+  countRate!: number;
 
-  itemsComment:number = 3;
-  
+  itemsComment: number = 3;
+
+  // Thêm biến quantity để bind với input số lượng, mặc định là 1
+  quantity: number = 1;
+
   constructor(
     private productService: ProductService,
     private modalService: NgbModal,
-    private cartService: CartService, 
+    private cartService: CartService,
     private toastr: ToastrService,
     private router: Router,
     private route: ActivatedRoute,
-    private customerService: CustomerService, 
+    private customerService: CustomerService,
     private favoriteService: FavoritesService,
     private sessionService: SessionService,
     private rateService: RateService) {
@@ -59,7 +62,7 @@ export class ProductDetailComponent implements OnInit {
     })
   }
 
-  slideConfig = {"slidesToShow": 7, "slidesToScroll": 2, "autoplay": true};
+  slideConfig = { "slidesToShow": 7, "slidesToScroll": 2, "autoplay": true };
 
   ngOnInit(): void {
     this.modalService.dismissAll();
@@ -83,7 +86,7 @@ export class ProductDetailComponent implements OnInit {
     this.getAllRate();
     this.itemsComment = size;
     console.log(this.itemsComment);
-    
+
   }
 
   getProduct() {
@@ -100,9 +103,9 @@ export class ProductDetailComponent implements OnInit {
   }
 
   getRates() {
-    this.rateService.getByProduct(this.id).subscribe(data=>{
+    this.rateService.getByProduct(this.id).subscribe(data => {
       this.rates = data as Rate[];
-    }, error=>{
+    }, error => {
       this.toastr.error('Lỗi hệ thống!', 'Hệ thống');
     })
   }
@@ -122,7 +125,7 @@ export class ProductDetailComponent implements OnInit {
         this.countRate++;
       }
     }
-    return this.countRate==0 ? 0 : Math.round(avgRating/this.countRate * 10) / 10;
+    return this.countRate == 0 ? 0 : Math.round(avgRating / this.countRate * 10) / 10;
   }
 
   toggleLike(id: number) {
@@ -173,16 +176,20 @@ export class ProductDetailComponent implements OnInit {
     })
   }
 
-  addCart(productId: number, price: number) {
+  addCart(productId: number, price: number, quantity: number = 1) {
     let email = this.sessionService.getUser();
     if (email == null) {
       this.router.navigate(['/sign-form']);
       this.toastr.info('Hãy đăng nhập để sử dụng dịch vụ của chúng tôi', 'Hệ thống');
       return;
     }
+    if (quantity < 1) {
+      this.toastr.warning('Số lượng phải lớn hơn hoặc bằng 1!', 'Hệ thống');
+      return;
+    }
     this.cartService.getCart(email).subscribe(data => {
       this.cart = data as Cart;
-      this.cartDetail = new CartDetail(0, 1, price, new Product(productId), new Cart(this.cart.cartId));
+      this.cartDetail = new CartDetail(0, quantity, price, new Product(productId), new Cart(this.cart.cartId));
       this.cartService.postDetail(this.cartDetail).subscribe(data => {
         this.toastr.success('Thêm vào giỏ hàng thành công!', 'Hệ thống!');
         this.cartService.getAllDetail(this.cart.cartId).subscribe(data => {
@@ -195,6 +202,33 @@ export class ProductDetailComponent implements OnInit {
         window.location.href = "/";
       })
     })
+  }
+
+  buyNow() {
+    let email = this.sessionService.getUser();
+    if (email == null) {
+      this.router.navigate(['/sign-form']);
+      this.toastr.info('Hãy đăng nhập để sử dụng dịch vụ của chúng tôi', 'Hệ thống');
+      return;
+    }
+
+    if (this.quantity < 1) {
+      this.toastr.warning('Số lượng phải lớn hơn hoặc bằng 1!', 'Hệ thống');
+      return;
+    }
+
+    // Không thêm vào giỏ hàng nữa, mà chuyển thẳng đến trang thanh toán với dữ liệu sản phẩm tạm thời
+    // Sử dụng router state để truyền dữ liệu sản phẩm và số lượng (lấy từ this.quantity)
+    this.toastr.success('Đang chuyển đến thanh toán...', 'Hệ thống!');
+    this.router.navigate(['/checkout'], {
+      state: {
+        buyNowItem: {
+          product: this.product,
+          quantity: this.quantity,
+          price: this.product.price * (1 - this.product.discount / 100)
+        }
+      }
+    });
   }
 
 }
