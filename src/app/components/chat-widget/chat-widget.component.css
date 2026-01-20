@@ -6,7 +6,7 @@
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  background-color: #fcb800; /* Màu vàng chủ đạo của Martfury */
+  background-color: #ff7337; /* Màu vàng chủ đạo của Martfury */
   color: white;
   border: none;
   font-size: 24px;
@@ -36,7 +36,7 @@
 
 /* Header */
 .chat-header {
-  background: #fcb800;
+  background: #ff7337;
   color: #222;
   padding: 15px;
   display: flex;
@@ -98,7 +98,7 @@
 .chat-footer button {
   background: none;
   border: none;
-  color: #fcb800;
+  color: #ff7337;
   font-size: 20px;
   margin-left: 10px;
   cursor: pointer;

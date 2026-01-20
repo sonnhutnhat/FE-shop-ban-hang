@@ -5,13 +5,13 @@
     color: #d3d3d3;
 }
 .full {
-    color: #fcb800; 
+    color: #ff7337; 
 }
 .half {
     position: absolute;
     display: inline-block;
     overflow: hidden;
-    color: #fcb800;
+    color: #ff7337;
 }
 
 /* 1. Xử lý ảnh Banner & Slider không bị méo */
@@ -67,7 +67,7 @@
 .ps-block--site-features .ps-block__left i {
     font-size: 36px;
     margin-bottom: 15px;
-    color: #fcb800;
+    color: #ff7337;
 }
 
 .ps-block--site-features h4 {
@@ -99,7 +99,7 @@
 }
 
 .ps-form--newsletter button {
-    background-color: #fcb800;
+    background-color: #ff7337;
     color: #222;
     font-weight: bold;
     border: none;

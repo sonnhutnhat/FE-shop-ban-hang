@@ -14,9 +14,7 @@
 
     .header--mobile {
         display: block !important;
-        background-color: #fcb800; /* Màu vàng thương hiệu */
-        position: sticky; /* Dính lên trên cùng */
-        top: 0;
+        background-color: #ff7337; /* Màu vàng thương hiệu */
         z-index: 1000;
         box-shadow: 0 4px 10px rgba(0,0,0,0.15); /* Đổ bóng nhẹ tạo chiều sâu */
         padding-bottom: 10px; /* Khoảng cách dưới để chứa thanh tìm kiếm */
@@ -87,7 +85,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    border: 2px solid #fcb800; /* Viền trùng màu nền để tạo khoảng cách */
+    border: 2px solid #ff7337; /* Viền trùng màu nền để tạo khoảng cách */
     box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
@@ -128,7 +126,7 @@
     height: 32px;
     border: none;
     background: #222; /* Nút màu đen nổi bật */
-    color: #fcb800; /* Icon vàng */
+    color: #ff7337; /* Icon vàng */
     border-radius: 50%;
     cursor: pointer;
     display: flex;
@@ -161,7 +159,7 @@
 
 /* Header của Sidebar */
 .ps-panel__header {
-    background: #fcb800;
+    background: #ff7337;
     padding: 20px 20px 40px 20px; /* Padding bottom lớn để tạo đường cong nếu muốn */
     display: flex;
     justify-content: space-between;
@@ -250,4 +248,9 @@
 .navigation__overlay.active {
     visibility: visible;
     opacity: 1;
+}
+
+
+.header__logo-img{
+    width: 150px;
 }

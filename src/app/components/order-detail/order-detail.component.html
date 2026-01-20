@@ -6,7 +6,7 @@
     <div class="modal-body">
         <table class="table">
             <thead>
-                <tr style="background-color: #fcb800; color: white;">
+                <tr style="background-color: #ff7337; color: white;">
                     <th class="text-center">STT</th>
                     <th>Sản phẩm</th>
                     <th>Giá</th>
@@ -22,9 +22,8 @@
                     <td>{{item.price | currency:'VND'}}</td>
                     <td class="text-center">{{item.quantity}}</td>
                     <td class="text-center" *ngIf="order.status==2">
-                        <app-rate
-                            style="cursor: pointer; color: #ffcc23;" title="Đánh giá"
-                            [orderDetail]="item" (editFinish)="finish()">
+                        <app-rate style="cursor: pointer; color: #ffcc23;" title="Đánh giá" [orderDetail]="item"
+                            (editFinish)="finish()">
                         </app-rate>
                     </td>
                 </tr>
@@ -42,5 +41,5 @@
                                                             color: var(--brandcolor);
                                                             background: var(--whitecolor);
                                                             text-shadow: var(--tshadow);"
-    onMouseOver="this.style.color='white', this.style.backgroundColor='#fcb800'"
-    onMouseOut="this.style.color='#fcb800', this.style.backgroundColor='white'"><i class="icon-eye"></i></a>
+    onMouseOver="this.style.color='white', this.style.backgroundColor='#ff7337'"
+    onMouseOut="this.style.color='#ff7337', this.style.backgroundColor='white'"><i class="icon-eye"></i></a>

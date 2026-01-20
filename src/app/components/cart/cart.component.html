@@ -33,10 +33,11 @@
                                     <div class="ps-product--cart">
                                         <div class="ps-product__thumbnail">
                                             <a [routerLink]="['/product-detail/'+item.product.productId]">
-                                            <img [src]="item.product.image" alt="" /></a>
+                                                <img [src]="item.product.image" alt="" /></a>
                                         </div>
                                         <div class="ps-product__content">
-                                            <a [routerLink]="['/product-detail/'+item.product.productId]">{{item.product.name}}</a>
+                                            <a
+                                                [routerLink]="['/product-detail/'+item.product.productId]">{{item.product.name}}</a>
                                             <p>Thể loại:<strong> {{item.product.category.categoryName}}</strong></p>
                                         </div>
                                     </div>
@@ -45,18 +46,16 @@
                                     {{item.product.price*(1 - item.product.discount/100) | currency:'VND'}}
                                 </td>
                                 <td data-label="Quantity" style="text-align: center;">
-                                    <input style="text-align: center;"
-                                    type="number" min="1"
-                                    [value]="item.quantity"
-                                    placeholder="0" name="quantity"
-                                    [(ngModel)]="item.quantity"
-                                    (change)="update(item.cartDetailId, item.quantity)" />
+                                    <input style="text-align: center;" type="number" min="1" [value]="item.quantity"
+                                        placeholder="0" name="quantity" [(ngModel)]="item.quantity"
+                                        (change)="update(item.cartDetailId, item.quantity)" />
                                 </td>
                                 <td style="text-align: center;" data-label="Total">
                                     {{item.price | currency:'VND'}}
                                 </td>
                                 <td style="text-align: center;" data-label="Actions">
-                                    <a href="javascript:void(0);" (click)="delete(item.cartDetailId)"><i class="icon-cross"></i></a>
+                                    <a href="javascript:void(0);" (click)="delete(item.cartDetailId)"><i
+                                            class="icon-cross"></i></a>
                                 </td>
                             </tr>
                         </tbody>
@@ -64,13 +63,13 @@
                 </div>
                 <div class="row mt-5 mb-5" *ngIf="cartDetails.length==0">
                     <div class="col-8 offset-2 text-center">
-                        <h2 style="color: #fcb800;">Giỏ hàng trống</h2>
-                        <h2 style="color: #fcb800;;">Hãy chọn 1 vài sản phẩm vào giỏ hàng của bạn.</h2>
+                        <h2 style="color: #ff7337;">Giỏ hàng trống</h2>
+                        <h2 style="color: #ff7337;;">Hãy chọn 1 vài sản phẩm vào giỏ hàng của bạn.</h2>
                     </div>
                 </div>
                 <div class="ps-section__cart-actions">
                     <a class="ps-btn" [routerLink]="['/all-product']">
-                    <i class="icon-arrow-left"></i> Quay lại cửa hàng</a>
+                        <i class="icon-arrow-left"></i> Quay lại cửa hàng</a>
                 </div>
             </div>
 

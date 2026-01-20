@@ -14,7 +14,7 @@
                 <h1>Danh sách yêu thích</h1>
             </div>
             <div class="col-lg-12 text-center m-5" *ngIf="favorites.length < 1">
-                <h2 style="color: #fcb800;">Không có sản phẩm nào trong danh sách yêu thích của bạn</h2>
+                <h2 style="color: #ff7337;">Không có sản phẩm nào trong danh sách yêu thích của bạn</h2>
             </div>
             <div class="ps-section__content">
                 <div class="table-responsive" *ngIf="favorites.length > 0">
@@ -31,7 +31,8 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr *ngFor="let item of favorites | paginate: { itemsPerPage: 5, currentPage: page}, index as i">
+                            <tr
+                                *ngFor="let item of favorites | paginate: { itemsPerPage: 5, currentPage: page}, index as i">
                                 <td>{{i+1}}</td>
                                 <td style="text-align: center;" data-label="Product">
                                     <div class="ps-product--cart">
@@ -45,7 +46,8 @@
                                 <td style="text-align: center;" data-label="Product">
                                     <div class="ps-product--cart">
                                         <div class="ps-product__content">
-                                            <a [routerLink]="['/product-detail/'+item.product.productId]">{{item.product.name}}</a>
+                                            <a
+                                                [routerLink]="['/product-detail/'+item.product.productId]">{{item.product.name}}</a>
                                             <p>Thể loại:<strong> {{item.product.category.categoryName}}</strong></p>
                                         </div>
                                     </div>
@@ -54,10 +56,13 @@
                                     {{item.product.price*(1 - item.product.discount/100) | currency:'VND'}}
                                 </td>
                                 <td style="text-align: center;" data-label="Status">
-                                    <span class="ps-tag ps-tag--in-stock">{{item.product.quantity>0?'Còn hàng': 'Hết hàng'}}</span>
+                                    <span class="ps-tag ps-tag--in-stock">{{item.product.quantity>0?'Còn hàng': 'Hết
+                                        hàng'}}</span>
                                 </td>
                                 <td style="text-align: center;" data-label="action">
-                                    <button class="ps-btn" (click)="addCart(item.product.productId, item.product.price*(1 - item.product.discount/100))" [disabled]="item.product.quantity<0">Thêm Giỏ Hàng</button>
+                                    <button class="ps-btn"
+                                        (click)="addCart(item.product.productId, item.product.price*(1 - item.product.discount/100))"
+                                        [disabled]="item.product.quantity<0">Thêm Giỏ Hàng</button>
                                 </td>
                                 <td style="text-align: center;" data-label="Remove">
                                     <a href="javascript:void(0);" (click)="delete(item.favoriteId, item.product.name)">
@@ -71,10 +76,7 @@
                     <div class="row" style="padding-top: 50px">
                         <div class="col-lg-12">
                             <ul>
-                                <pagination-controls
-                                    (pageChange)="page = $event"
-                                    previousLabel=""
-                                    nextLabel=""
+                                <pagination-controls (pageChange)="page = $event" previousLabel="" nextLabel=""
                                     class="text-center my-page">
                                 </pagination-controls>
                             </ul>

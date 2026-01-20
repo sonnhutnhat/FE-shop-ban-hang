@@ -8,7 +8,7 @@
   
   .my-page /deep/ .ngx-pagination .current span {
     padding: 7px 16px !important;
-    background-color: #fcb800 !important;
+    background-color: #ff7337 !important;
     border-radius: 10%;
   }
   
