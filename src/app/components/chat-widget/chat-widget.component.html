@@ -1,27 +1,53 @@
 <div class="chat-widget-container">
-  <button class="chat-toggle-btn" (click)="toggleChat()">
+  <button class="chat-toggle-btn" (click)="toggleChat()" aria-label="Open chat">
     <i class="fa fa-comments" aria-hidden="true"></i>
   </button>
 
   <div class="chat-box" *ngIf="isOpen">
     <div class="chat-header">
-      <h5>Hỗ trợ trực tuyến</h5>
-      <span class="close-btn" (click)="toggleChat()">&times;</span>
+      <div class="header-left">
+        <div class="brand-dot"></div>
+        <div class="title-wrap">
+          <div class="title">Hỗ trợ trực tuyến</div>
+          <div class="subtitle">Trợ lý ảo</div>
+        </div>
+      </div>
+
+      <span class="close-btn" (click)="toggleChat()" aria-label="Close chat">&times;</span>
     </div>
 
-    <div class="chat-body">
-      <div *ngFor="let msg of messages" [class.msg-user]="msg.isUser" [class.msg-bot]="!msg.isUser">
-        <div class="msg-content">{{ msg.text }}</div>
+    <div class="chat-body" #chatBody>
+      <div *ngFor="let msg of messages" class="msg-row" [class.msg-user]="msg.isUser" [class.msg-bot]="!msg.isUser">
+        <div class="avatar" *ngIf="!msg.isUser">
+          <i class="fa fa-robot" aria-hidden="true"></i>
+        </div>
+
+        <div class="bubble">
+          <div class="msg-content">{{ msg.text }}</div>
+        </div>
       </div>
 
-      <div *ngIf="isLoading" class="msg-bot">
-        <div class="msg-content">Running...</div>
+      <!-- Typing indicator -->
+      <div *ngIf="isLoading" class="msg-row msg-bot">
+        <div class="avatar">
+          <i class="fa fa-robot" aria-hidden="true"></i>
+        </div>
+        <div class="bubble">
+          <div class="typing">
+            <span></span><span></span><span></span>
+          </div>
+        </div>
       </div>
+
+      <!-- anchor for scroll -->
+      <div #bottomAnchor></div>
     </div>
 
     <div class="chat-footer">
-      <input type="text" [(ngModel)]="userMessage" (keyup.enter)="sendMessage()" placeholder="Nhập câu hỏi..." />
-      <button (click)="sendMessage()">
+      <input type="text" [(ngModel)]="userMessage" (keyup.enter)="sendMessage()" [disabled]="isLoading"
+        placeholder="Nhập câu hỏi..." />
+
+      <button (click)="sendMessage()" [disabled]="isLoading || !userMessage.trim()" aria-label="Send">
         <i class="fa fa-paper-plane" aria-hidden="true"></i>
       </button>
     </div>

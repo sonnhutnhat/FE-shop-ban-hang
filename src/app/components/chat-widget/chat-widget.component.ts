@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { ChatAiService } from '../../services/chat-ai.service'; // Import Service vừa tạo
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { ChatAiService } from '../../services/chat-ai.service';
+
+type ChatMessage = { text: string; isUser: boolean };
 
 @Component({
   selector: 'app-chat-widget',
@@ -7,48 +9,76 @@ import { ChatAiService } from '../../services/chat-ai.service'; // Import Servic
   styleUrls: ['./chat-widget.component.css']
 })
 export class ChatWidgetComponent implements OnInit {
-  isOpen = false;       // Trạng thái mở/đóng khung chat
-  userMessage = '';     // Nội dung người dùng nhập
-  isLoading = false;    // Trạng thái đang chờ AI trả lời
+  isOpen = false;
+  userMessage = '';
+  isLoading = false;
 
-  // Danh sách tin nhắn (Mẫu 1 tin chào hỏi ban đầu)
-  messages: { text: string, isUser: boolean }[] = [
+  messages: ChatMessage[] = [
     { text: 'Xin chào! Tôi là trợ lý ảo Shopee. Tôi có thể giúp gì cho bạn?', isUser: false }
   ];
 
+  @ViewChild('chatBody') chatBody!: ElementRef<HTMLDivElement>;
+  @ViewChild('bottomAnchor') bottomAnchor!: ElementRef<HTMLDivElement>;
+
   constructor(private chatService: ChatAiService) { }
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void { }
 
-  // Hàm bật/tắt khung chat
   toggleChat() {
     this.isOpen = !this.isOpen;
+    if (this.isOpen) this.scrollToBottom();
   }
 
-  // Hàm gửi tin nhắn
   sendMessage() {
-    if (!this.userMessage.trim()) return;
+    const msg = (this.userMessage || '').trim();
+    if (!msg || this.isLoading) return;
 
-    // 1. Hiển thị tin nhắn của người dùng ngay lập tức
-    const msg = this.userMessage;
+    // user message
     this.messages.push({ text: msg, isUser: true });
-    this.userMessage = ''; // Xóa ô nhập
-    this.isLoading = true; // Bật loading
+    this.userMessage = '';
+    this.isLoading = true;
+    this.scrollToBottom();
 
-    // 2. Gửi xuống Backend
     this.chatService.sendMessage(msg).subscribe(
-      (response) => {
+      (response: any) => {
         this.isLoading = false;
-        // 3. Nhận câu trả lời từ AI và hiển thị
-        // Backend trả về: { "response": "Nội dung..." }
-        this.messages.push({ text: response.response, isUser: false });
+
+        // ✅ chịu được nhiều dạng response backend trả về
+        let botText = '';
+        if (typeof response === 'string') {
+          botText = response;
+        } else if (response && typeof response === 'object') {
+          botText = response.response || response.reply || response.text || '';
+        }
+
+        if (!botText || !botText.trim()) {
+          botText = 'Mình chưa nhận được nội dung trả lời. Bạn thử lại giúp mình nhé!';
+        }
+
+        this.messages.push({ text: botText, isUser: false });
+        this.scrollToBottom();
       },
       (error) => {
         this.isLoading = false;
         this.messages.push({ text: 'Lỗi kết nối tới Server!', isUser: false });
+        this.scrollToBottom();
         console.error(error);
       }
     );
+  }
+
+  private scrollToBottom() {
+    // delay để Angular render xong DOM rồi mới scroll
+    setTimeout(() => {
+      try {
+        if (this.bottomAnchor?.nativeElement) {
+          this.bottomAnchor.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        } else if (this.chatBody?.nativeElement) {
+          this.chatBody.nativeElement.scrollTop = this.chatBody.nativeElement.scrollHeight;
+        }
+      } catch (e) {
+        // ignore
+      }
+    }, 0);
   }
 }
