@@ -1,3 +1,74 @@
+/* =========================
+   FIX: chống scroll ngang (homepage)
+   - Vì component CSS bị scoped nên dùng ::ng-deep để tác động lên body/html nếu cần.
+   - Đồng thời chặn "row margin âm" và slick track overflow.
+   ========================= */
+:host { display: block; max-width: 100%; }
+
+:host ::ng-deep html,
+:host ::ng-deep body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden; /* fallback */
+    overflow-x: clip;   /* modern */
+}
+
+/* Chặn tràn ngang cho khu vực homepage */
+#homepage-1,
+#homepage-1 * {
+    box-sizing: border-box;
+}
+
+#homepage-1 {
+    max-width: 100%;
+    overflow-x: clip;
+}
+
+/* Bootstrap row hay gây tràn vì margin âm (-15px) */
+#homepage-1 .row {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+
+/* Giữ padding cột ổn định để không dính sát */
+#homepage-1 [class*="col-"] {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+/* Container của theme đôi khi có max-width / margin lạ */
+#homepage-1 .ps-container,
+#homepage-1 .container {
+    width: 100%;
+    max-width: 100% !important;
+    overflow-x: clip;
+}
+
+/* Ảnh/SVG không vượt viewport */
+#homepage-1 img,
+#homepage-1 svg {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Slick/ngx-slick: chặn track kéo ngang trang */
+#homepage-1 ngx-slick-carousel,
+#homepage-1 ngx-slick-carousel .slick-list {
+    max-width: 100%;
+    overflow: hidden !important;
+}
+#homepage-1 ngx-slick-carousel .slick-track {
+    display: flex !important; /* giúp track không “bung” lạ */
+}
+#homepage-1 ngx-slick-carousel .slick-slide {
+    height: auto;
+}
+#homepage-1 .slide {
+    max-width: 100%;
+}
+
+/* ====================================================== */
+
 .star {
     position: relative;
     display: inline-block;
@@ -46,6 +117,8 @@
     margin-top: 30px;
     margin-bottom: 30px;
     border-radius: 4px;
+    max-width: 100%;
+    overflow-x: clip;
 }
 
 .ps-block--site-features .ps-block__item {
@@ -58,6 +131,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    min-width: 0;
 }
 
 .ps-block--site-features .ps-block__item:last-child {
@@ -89,6 +163,8 @@
     background-color: #f4f4f4;
     padding: 50px 0;
     margin-top: 50px;
+    max-width: 100%;
+    overflow-x: clip;
 }
 
 .ps-form--newsletter input {
@@ -96,6 +172,7 @@
     border-radius: 4px 0 0 4px;
     border: 1px solid #ccc;
     padding-left: 20px;
+    min-width: 0;
 }
 
 .ps-form--newsletter button {
@@ -158,6 +235,12 @@
     .ps-section__header .ps-section__links li {
         margin-right: 15px;
     }
+
+    /* Slick: đảm bảo không tạo overflow ngang trên tablet */
+    ngx-slick-carousel,
+    ngx-slick-carousel .slick-list {
+        overflow: hidden !important;
+    }
 }
 
 /* Mobile nhỏ (< 576px) */
@@ -182,4 +265,85 @@
         border-radius: 4px;
         width: 100%;
     }
+}
+
+/* =========================
+   FIX: spacing các section sản phẩm trên HOMEPAGE (mobile)
+   Áp cho các block kiểu: SẢN PHẨM THỊNH HÀNH / BÁN CHẠY / NỔI BẬT
+   Không đổi logic, chỉ giãn khoảng cách.
+   ========================= */
+
+#homepage-1 .ps-product-list,
+#homepage-1 .ps-section--default,
+#homepage-1 .ps-section--gray,
+#homepage-1 .ps-section--shopping {
+  margin-top: 28px;   /* tạo khoảng cách giữa các section */
+}
+
+#homepage-1 .ps-product-list:first-child,
+#homepage-1 .ps-section--default:first-child {
+  margin-top: 0;
+}
+
+/* Header của section: title + tabs */
+#homepage-1 .ps-section__header {
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+
+/* Title */
+#homepage-1 .ps-section__header h3 {
+  margin: 0 0 10px 0;
+  line-height: 1.25;
+}
+
+/* Tabs/links (Thịnh hành / Bán chạy / ...) */
+#homepage-1 .ps-section__links {
+  display: flex;
+  flex-wrap: wrap;       /* cho phép xuống dòng */
+  gap: 10px 14px;        /* giãn giữa các tab */
+  margin: 0;
+  padding: 0;
+}
+
+#homepage-1 .ps-section__links li {
+  margin: 0 !important;  /* bỏ margin cũ để tránh dồn */
+}
+
+/* Dòng sản phẩm ngay dưới header: tạo khoảng cách */
+#homepage-1 .ps-section__content,
+#homepage-1 .ps-product-list .ps-section__content {
+  padding-top: 8px;
+}
+
+/* Nếu bên trong dùng slick carousel */
+#homepage-1 ngx-slick-carousel {
+  margin-top: 6px;
+}
+
+/* =========================
+   MOBILE ưu tiên spacing lớn hơn để không dí nhau
+   ========================= */
+@media (max-width: 576px) {
+  #homepage-1 .ps-product-list,
+  #homepage-1 .ps-section--default,
+  #homepage-1 .ps-section--gray,
+  #homepage-1 .ps-section--shopping {
+    margin-top: 34px;
+  }
+
+  #homepage-1 .ps-section__header {
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+  }
+
+  #homepage-1 .ps-section__header h3 {
+    margin-bottom: 12px;
+    font-size: 18px; /* nếu bạn thấy title hơi to/nhỏ có thể chỉnh nhẹ */
+  }
+
+  #homepage-1 .ps-section__content {
+    padding-top: 10px;
+  }
 }
